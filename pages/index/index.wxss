@@ -1,0 +1,33 @@
+/* pages/index/index.wxss */
+
+
+.media-box__title_small {
+  font-size: 15px;
+}
+
+.media-box__desc_multiline {
+  line-height: 1.5;
+  overflow: unset;
+  text-overflow: unset;
+  -webkit-line-clamp: unset;
+}
+
+.topfixed {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+}
+
+.main {
+  top: 44px;
+  margin-top: unset;
+}
+.main_low {
+  top: 156px;
+  margin-top: unset;
+}
+
+.searcharea {
+  height: 140px;
+  font-size: 14px;
+}

@@ -1,0 +1,16 @@
+<view wx:if="{{canIUse}}">
+  <view class='header'>
+    <image src='/images/esperanto-square.png'></image>
+  </view>
+
+  <view class='content'>
+    <view>欢迎使用Hura世界语助手小程序</view>
+    <text>请点击下方“授权登录”开始使用</text>
+  </view>
+
+  <button class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+    授权登录
+  </button>
+</view>
+
+<view wx:else>请升级微信版本</view>

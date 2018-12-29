@@ -1,0 +1,89 @@
+<wxs module='resultViewer'>
+  var isSuccess = function(allResults, section) {
+    return allResults[section.key].success
+  }
+
+  var convertResult = function(allResults, section) {
+    results = allResults[section.key].result
+
+    var resultStr = ''
+    for (var i = 0; i < results.length; i++) {
+      var result = results[i]
+      if (resultStr)
+        resultStr += "\n"
+      if (result.title)
+        resultStr += ("◆" + result.title + "\n")
+      resultStr += result.content
+    }
+    return resultStr
+  }
+
+  module.exports.isSuccess = isSuccess
+  module.exports.convertResult = convertResult
+</wxs>
+
+<view class='page-body'>
+
+  <view class="weui-search-bar topfixed">
+    <view class="weui-search-bar__form">
+      <view class="weui-search-bar__box">
+        <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+        <input wx:if="{{!largeInput}}" type="text" value="{{inputQuery}}" class="weui-search-bar__input" placeholder="输入世界语或汉语" focus="{{!largeInput}}" bindinput="inputTyping" />
+        <textarea wx:if="{{largeInput}}" class="weui-textarea searcharea" maxlength='500' value="{{inputQuery}}" placeholder="输入世界语或汉语" focus="{{largeInput}}" bindinput="inputTyping" />
+        <view class="weui-icon-clear" wx:if="{{inputQuery.length > 0}}" bindtap="clearInput">
+          <icon type="clear" size="14"></icon>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="weui-panel weui-panel_access {{resultViewer.isLargeText(inputQuery)?'main_low':'main'}}">
+
+    <view class="weui-panel__bd">
+      <block wx:for="{{sections}}" wx:for-item="section" wx:key="key">
+        <view wx:if="{{results[section.key].success}}" class="weui-media-box weui-media-box_text">
+          <view wx:if="{{section.name}}" class="weui-media-box__title media-box__title_small weui-media-box__title_in-text">{{section.name}}</view>
+          <text class="weui-media-box__desc media-box__desc_multiline">{{resultViewer.convertResult(results,section)}}</text>
+        </view>
+      </block>
+    </view>
+
+
+
+    <view wx:if="{{sections.length==0 || resultCount!=sections.length}}" class="weui-panel__bd">
+      <view class="weui-media-box weui-media-box_text">
+        <view class="weui-loadmore">
+          <view class="weui-loading"></view>
+          <view class="weui-loadmore__tips">正在查询</view>
+        </view>
+      </view>
+    </view>
+
+    
+    <view wx:if="{{resultCount==sections.length && successCount==0}}" class="weui-panel__bd">
+      <view class="weui-media-box weui-media-box_text">
+        没有查询结果，请重新输入。
+      </view>
+    </view>
+
+    <view wx:if="{{submitQuery.length==0}}" class="weui-panel__bd">
+      <view class="weui-media-box weui-media-box_text">
+        <view class="weui-article__p">
+          Saluton! 欢迎试用Hura世界语助手小程序。
+        </view>
+        <view class="weui-article__p">
+          请在上方搜索框输入世界语或汉语，Hura将提供词典查询或机器翻译。
+        </view>
+        <view class="weui-article__p">
+          Hura世界语助手小程序目前与Hura公众号同时提供服务。由于公众号的交互体验有限，后续的功能升级将主要在Hura小程序中进行。如有任何问题或改进意见，欢迎点击下方的“意见反馈”进行反馈。谢谢！
+        </view>
+      </view>
+    </view>
+
+    <view class="weui-btn-area">
+      <button class="weui-btn" open-type='feedback' type="default" size="mini">意见反馈</button>
+    </view>
+
+  </view>
+
+</view>
