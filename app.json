@@ -8,5 +8,11 @@
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "Hura世界语助手",
     "navigationBarTextStyle": "black"
+  },
+  "networkTimeout": {
+    "request": 5000,
+    "connectSocket": 60000,
+    "uploadFile": 60000,
+    "downloadFile": 60000
   }
 }
