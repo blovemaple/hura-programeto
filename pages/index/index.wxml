@@ -27,13 +27,22 @@
   <view class="weui-search-bar topfixed">
     <view class="weui-search-bar__form">
       <view class="weui-search-bar__box">
-        <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
-        <input wx:if="{{!largeInput}}" type="text" value="{{inputQuery}}" class="weui-search-bar__input" placeholder="输入世界语或汉语" focus="{{!largeInput}}" bindinput="inputTyping" />
-        <textarea wx:if="{{largeInput}}" class="weui-textarea searcharea" maxlength='500' value="{{inputQuery}}" placeholder="输入世界语或汉语" focus="{{largeInput}}" bindinput="inputTyping" />
+        <icon class="weui-icon-search_in-box" type="search" size="14" bindtap='showHistory'></icon>
+        <input type="text" value="{{inputQuery}}" class="weui-search-bar__input" placeholder="输入世界语或汉语" maxlength='30' focus='true' bindinput="inputTyping" bindtouchstart='showHistory' bindblur='hideHistory' />
+        <!--<textarea wx:if="{{largeInput}}" class="weui-textarea searcharea" maxlength='500' value="{{inputQuery}}" placeholder="输入世界语或汉语" focus="{{largeInput}}" bindinput="inputTyping" />-->
         <view class="weui-icon-clear" wx:if="{{inputQuery.length > 0}}" bindtap="clearInput">
           <icon type="clear" size="14"></icon>
         </view>
       </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showHistory}}" class="weui-cells searchbar-result topfixed_2">
+    <view wx:for="{{queryHistory}}" wx:for-item="query" class="weui-cell" hover-class="weui-cell_active" bindtouchstart='historyTapped' data-content="{{query}}">
+      <view class="weui-cell__bd">{{query}}</view>
+    </view>
+    <view wx:if="{{queryHistory.length==0}}" class="weui-cell" hover-class="weui-cell_active">
+      <view class="weui-cell__bd">（没有历史查询）</view>
     </view>
   </view>
 
@@ -43,7 +52,11 @@
       <block wx:for="{{sections}}" wx:for-item="section" wx:key="key">
         <view wx:if="{{results[section.key].success}}" class="weui-media-box weui-media-box_text">
           <view wx:if="{{section.name}}" class="weui-media-box__title media-box__title_small weui-media-box__title_in-text">{{section.name}}</view>
-          <text class="weui-media-box__desc media-box__desc_multiline">{{resultViewer.convertResult(results,section)}}</text>
+          <text selectable='true' class="weui-media-box__desc media-box__desc_multiline">{{resultViewer.convertResult(results,section)}}</text>
+          <view class="weui-media-box__info">
+            <view wx:if="{{section.canCopy}}" class="weui-media-box__info__meta" bindtap='copyTapped' data-content="{{resultViewer.convertResult(results,section)}}">复制</view>
+            <view wx:if="{{section.canLookup}}" class="weui-media-box__info__meta" bindtap='lookupTapped' data-content="{{resultViewer.convertResult(results,section)}}">反查</view>
+          </view>
         </view>
       </block>
     </view>
@@ -59,7 +72,7 @@
       </view>
     </view>
 
-    
+
     <view wx:if="{{resultCount==sections.length && successCount==0}}" class="weui-panel__bd">
       <view class="weui-media-box weui-media-box_text">
         没有查询结果，请重新输入。
@@ -69,7 +82,7 @@
     <view wx:if="{{submitQuery.length==0}}" class="weui-panel__bd">
       <view class="weui-media-box weui-media-box_text">
         <view class="weui-article__p">
-          Saluton! 欢迎试用Hura世界语助手小程序。
+          Saluton! 欢迎使用Hura世界语助手小程序。
         </view>
         <view class="weui-article__p">
           请在上方搜索框输入世界语或汉语，Hura将提供词典查询或机器翻译。

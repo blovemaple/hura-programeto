@@ -2,6 +2,7 @@
 const common = require('../../lib/common.js')
 
 var fieldVortaroSections = 'vortaroSections'
+var fieldQueryHistory = "queryHistory"
 
 Page({
 
@@ -10,17 +11,20 @@ Page({
     submitVersion: 0,
     inputQuery: "",
     largeInput: false,
-    submitQuery: ""
+    submitQuery: "",
+    showHistory: false,
+    queryHistory: []
   },
 
-  // onLoad:function(){
-  //   // 验证登录
-  //   common.loginRequired({
-  //     success: function () {
-  //       console.log("onLaunch: logined. loginKey=" + wx.getStorageSync("loginKey"))
-  //     }
-  //   },true)
-  // },
+  onLoad: function() {
+    // 取查询历史
+    let history = wx.getStorageSync(fieldQueryHistory)
+    if (history instanceof Array) {
+      this.setData({
+        queryHistory: history
+      });
+    }
+  },
 
   onShow: function() {
     // 验证登录
@@ -31,13 +35,25 @@ Page({
     }, true)
   },
 
-  /**
-   * 输入内容，延迟0.5秒开始查询
-   */
-  inputTyping: function(e) {
-    console.log("typing: " + e.detail.value)
 
-    var query = e.detail.value
+
+  /** 输入内容 */
+  inputTyping: function(e) {
+    this.inputChanged(e.detail.value)
+  },
+
+  /**
+   * 延迟0.5秒开始查询
+   */
+  inputChanged: function(value, noDelay) {
+    console.log("typing: " + value)
+
+    if (value.length == 0)
+      this.showHistory()
+    else
+      this.hideHistory()
+
+    var query = value
     this.setData({
       inputQuery: query
     });
@@ -53,9 +69,13 @@ Page({
     this.data.inputVersion++;
     var inputVersion = this.data.inputVersion;
 
-    if (e.detail.value.length == 0) {
+    if (value.length == 0) {
       return
     }
+
+    let waitTime = 500
+    if (noDelay)
+      waitTime = 0
 
     setTimeout(function() {
       if (that.data.inputVersion != inputVersion)
@@ -69,7 +89,7 @@ Page({
       })
       that.sendQuery(query, submitVersion)
 
-    }, 500)
+    }, waitTime)
 
   },
 
@@ -79,6 +99,8 @@ Page({
   sendQuery: function(query, version) {
     console.log("query: " + query)
     console.log("version: " + version)
+
+    this.recordHistory(query)
 
     this.setData({
       sections: {},
@@ -177,11 +199,86 @@ Page({
   },
 
   /**
+   * 记录查询历史
+   */
+  recordHistory: function(query) {
+    let history = this.data.queryHistory
+    if (history.length > 0) {
+      if (query.startsWith(history[0])) {
+        //
+        if (history.indexOf(query) >= 0) {
+          history.splice(history.indexOf(query), 1)
+        }
+        history[0] = query
+      } else if (history.indexOf(query) >= 0) {
+        history.splice(history.indexOf(query), 1)
+        history.splice(0, 0, query)
+      } else if (history.length >= 10) {
+        history.splice(9, history.length - 9)
+        history.splice(0, 0, query)
+      } else {
+        history.splice(0, 0, query)
+      }
+    } else {
+      history.splice(0, 0, query)
+    }
+
+    this.setData({
+      queryHistory: history
+    })
+    wx.setStorageSync(fieldQueryHistory, history)
+  },
+
+  /**
+   * 显示查询历史
+   */
+  showHistory: function() {
+    this.setData({
+      showHistory: true
+    })
+  },
+
+  /**
+   * 隐藏查询历史
+   */
+  hideHistory: function() {
+    this.setData({
+      showHistory: false
+    })
+  },
+
+  /**
    * 点击清空按钮
    */
   clearInput: function() {
     this.setData({
       inputQuery: ""
-    });
+    })
+    this.inputChanged("")
   },
+
+  /** 点击复制 */
+  copyTapped: function(event) {
+    wx.setClipboardData({
+      data: event.target.dataset.content
+    })
+  },
+
+  /** 点击反查 */
+  lookupTapped: function(event) {
+    let query = event.target.dataset.content
+    this.setData({
+      inputQuery: query
+    })
+    this.inputChanged(query, true)
+  },
+
+  /** 点击查询历史 */
+  historyTapped: function(event) {
+    let query = event.currentTarget.dataset.content
+    this.setData({
+      inputQuery: query
+    })
+    this.inputChanged(query, true)
+  }
 })

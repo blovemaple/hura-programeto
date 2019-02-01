@@ -18,6 +18,13 @@
   z-index: 100;
 }
 
+.topfixed_2 {
+  position: fixed;
+  top: 44px;
+  width: 100%;
+  z-index: 100;
+}
+
 .main {
   top: 44px;
   margin-top: unset;
@@ -30,4 +37,9 @@
 .searcharea {
   height: 140px;
   font-size: 14px;
+}
+
+.searchbar-result{
+    margin-top: 0;
+    font-size: 14px;
 }
