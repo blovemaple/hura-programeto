@@ -105,8 +105,9 @@ Page({
     this.setData({
       sections: {},
       results: {},
-      resultCount: 0,
-      successCount: 0
+      completeCount: 0,
+      hasResultsCount: 0,
+      errorCount: 0,
     })
 
     var that = this
@@ -157,24 +158,18 @@ Page({
         if (that.data.submitVersion != version)
           return
 
+        var keyName = "results." + section.key + ".result"
+        that.setData({
+          [keyName]: data.results
+        })
+        var keyName = "results." + section.key + ".success"
+        that.setData({
+          [keyName]: true
+        })
+
         if (data.results.length > 0) {
-          var keyName = "results." + section.key + ".result"
           that.setData({
-            [keyName]: data.results
-          })
-          var keyName = "results." + section.key + ".success"
-          that.setData({
-            [keyName]: true
-          })
-
-          that.setData({
-            successCount: that.data.successCount + 1
-          })
-
-        } else {
-          var keyName = "results." + section.key + ".success"
-          that.setData({
-            [keyName]: false
+            hasResultsCount: that.data.hasResultsCount + 1
           })
         }
       },
@@ -186,13 +181,16 @@ Page({
         that.setData({
           [keyName]: false
         })
+        that.setData({
+          errorCount: that.data.errorCount + 1
+        })
       },
 
       complete: function(res) {
         if (that.data.submitVersion != version)
           return
         that.setData({
-          resultCount: that.data.resultCount + 1
+          completeCount: that.data.completeCount + 1
         })
       }
     })
@@ -280,5 +278,20 @@ Page({
       inputQuery: query
     })
     this.inputChanged(query, true)
-  }
+  },
+
+  /** 点击重新查询异常部分 */
+  retryTapped: function(event) {
+    let sections = this.data.sections
+    for (var i in sections) {
+      let section = sections[i]
+      if (!this.data.results[section.key].success) {
+        this.setData({
+          errorCount: this.data.errorCount - 1,
+          completeCount: this.data.completeCount - 1
+        })
+        this.sendQueryOneSection(section, this.data.submitQuery, this.data.submitVersion)
+      }
+    }
+  },
 })

@@ -1,8 +1,4 @@
 <wxs module='resultViewer'>
-  var isSuccess = function(allResults, section) {
-    return allResults[section.key].success
-  }
-
   var convertResult = function(allResults, section) {
     results = allResults[section.key].result
 
@@ -18,12 +14,12 @@
     return resultStr
   }
 
-  module.exports.isSuccess = isSuccess
   module.exports.convertResult = convertResult
 </wxs>
 
 <view class='page-body'>
 
+  <!--查询框-->
   <view class="weui-search-bar topfixed">
     <view class="weui-search-bar__form">
       <view class="weui-search-bar__box">
@@ -37,6 +33,7 @@
     </view>
   </view>
 
+  <!--查询历史-->
   <view wx:if="{{showHistory}}" class="weui-cells searchbar-result topfixed_2">
     <view wx:for="{{queryHistory}}" wx:for-item="query" class="weui-cell" hover-class="weui-cell_active" bindtouchstart='historyTapped' data-content="{{query}}">
       <view class="weui-cell__bd">{{query}}</view>
@@ -46,11 +43,13 @@
     </view>
   </view>
 
+  <!--查询结果-->
   <view class="weui-panel weui-panel_access {{resultViewer.isLargeText(inputQuery)?'main_low':'main'}}">
 
+    <!--正常结果-->
     <view class="weui-panel__bd">
       <block wx:for="{{sections}}" wx:for-item="section" wx:key="key">
-        <view wx:if="{{results[section.key].success}}" class="weui-media-box weui-media-box_text">
+        <view wx:if="{{results[section.key].result.length>0}}" class="weui-media-box weui-media-box_text">
           <view wx:if="{{section.name}}" class="weui-media-box__title media-box__title_small weui-media-box__title_in-text">{{section.name}}</view>
           <text selectable='true' class="weui-media-box__desc media-box__desc_multiline">{{resultViewer.convertResult(results,section)}}</text>
           <view class="weui-media-box__info">
@@ -63,7 +62,8 @@
 
 
 
-    <view wx:if="{{sections.length==0 || resultCount!=sections.length}}" class="weui-panel__bd">
+    <!--正在查询的提示-->
+    <view wx:if="{{sections.length==0 || completeCount!=sections.length}}" class="weui-panel__bd">
       <view class="weui-media-box weui-media-box_text">
         <view class="weui-loadmore">
           <view class="weui-loading"></view>
@@ -73,12 +73,21 @@
     </view>
 
 
-    <view wx:if="{{resultCount==sections.length && successCount==0}}" class="weui-panel__bd">
+    <!--没有查询结果的提示-->
+    <view wx:if="{{completeCount==sections.length && hasResultsCount==0 && errorCount==0}}" class="weui-panel__bd">
       <view class="weui-media-box weui-media-box_text">
         没有查询结果，请重新输入。
       </view>
     </view>
 
+    <!--查询异常的提示-->
+    <view wx:if="{{completeCount==sections.length && errorCount>0}}" class="weui-panel__bd">
+      <view class="weui-media-box weui-media-box_text" bindtap="retryTapped">
+        部分结果查询失败，请点击此处重新查询。
+      </view>
+    </view>
+
+    <!--初始画面的说明文案-->
     <view wx:if="{{submitQuery.length==0}}" class="weui-panel__bd">
       <view class="weui-media-box weui-media-box_text">
         <view class="weui-article__p">
@@ -96,6 +105,7 @@
       </view>
     </view>
 
+    <!--意见反馈按钮-->
     <view class="weui-btn-area">
       <button class="weui-btn" open-type='feedback' type="default" size="mini">意见反馈</button>
     </view>
