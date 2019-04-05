@@ -1,0 +1,15 @@
+<!--pages/detail/detail.wxml-->
+<import src="../../lib/wxParse/wxParse.wxml" />
+<view wx:if="{{!requesting}}" class="container">
+  <template is="wxParse" data="{{wxParseData:article.nodes}}" />
+</view>
+
+<!--正在查询的提示-->
+<view wx:if="{{requesting}}" class="weui-panel__bd">
+  <view class="weui-media-box weui-media-box_text">
+    <view class="weui-loadmore">
+      <view class="weui-loading"></view>
+      <view class="weui-loadmore__tips">正在查询</view>
+    </view>
+  </view>
+</view>

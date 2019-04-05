@@ -50,11 +50,17 @@
     <view class="weui-panel__bd">
       <block wx:for="{{sections}}" wx:for-item="section" wx:key="key">
         <view wx:if="{{results[section.key].result.length>0}}" class="weui-media-box weui-media-box_text">
+          <!--名称-->
           <view wx:if="{{section.name}}" class="weui-media-box__title media-box__title_small weui-media-box__title_in-text">{{section.name}}</view>
+          <!--内容-->
           <text selectable='true' class="weui-media-box__desc media-box__desc_multiline">{{resultViewer.convertResult(results,section)}}</text>
           <view class="weui-media-box__info">
+            <!--复制按钮-->
             <view wx:if="{{section.canCopy}}" class="weui-media-box__info__meta" bindtap='copyTapped' data-content="{{resultViewer.convertResult(results,section)}}">复制</view>
+            <!--反查按钮-->
             <view wx:if="{{section.canLookup}}" class="weui-media-box__info__meta" bindtap='lookupTapped' data-content="{{resultViewer.convertResult(results,section)}}">反查</view>
+            <!--详细内容按钮-->
+            <view wx:if="{{section.hasDetail}}" class="weui-media-box__info__meta" bindtap='detailTapped' data-sectionkey="{{section.key}}">详细内容</view>
           </view>
         </view>
       </block>

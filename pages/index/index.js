@@ -271,6 +271,15 @@ Page({
     this.inputChanged(query, true)
   },
 
+  /** 点击详细内容 */
+  detailTapped: function(event) {
+    let query = this.data.submitQuery
+    let sectionkey = event.target.dataset.sectionkey
+    wx.navigateTo({
+      url: '../detail/detail?query=' + query + '&sectionkey=' + sectionkey,
+    })
+  },
+
   /** 点击查询历史 */
   historyTapped: function(event) {
     let query = event.currentTarget.dataset.content
